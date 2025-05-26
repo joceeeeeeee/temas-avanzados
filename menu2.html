@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Menú</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="src/css/menu.css" />
+    <link rel="stylesheet" href="src/css/obscuro.css" />
+
+</head>
+<body class="container py-4">
+
+  <!-- Botón para activar modo oscuro -->
+<button id="btnDarkMode" class="btn btn-dark" data-bs-toggle="tooltip" title="Activar modo oscuro">🌙</button>
+
+
+
+
+<nav class="navbar bg-white mb-4 p-3 shadow-sm d-flex justify-content-between align-items-center">
+    <h2 class="navbar-brand mb-0">Menú</h2>
+    <div class="d-flex justify-content-center align-items-center gap-2">
+        <button id="btnDislexia" class="boton-vintage"> Legible font</button>
+        <button id="btnAumentar" class="boton-vintage" title="Aumentar tamaño de texto">A+</button>
+        <button id="btnReducir"class="boton-vintage"  title="Reducir tamaño de texto">A-</button>
+
+<div class="mb-3">
+  <label for="alergias" class="form-label" onclick="document.getElementById('alergias').focus()">Select your allergens:</label>
+  <select class="form-select" id="alergias" multiple size="6">
+    <option value="Lettuce">Lettuce</option>
+    <option value="Tomato">Tomato</option>
+    <option value="Cheese">Cheese</option>
+    <option value="Onion">Onion</option>
+    <option value="Beef">Beef</option>
+    <option value="Chicken">Chicken</option>
+    <option value="Bread">Bread</option>
+    <option value="Ketchup">Ketchup</option>
+    <option value="Mustard">Mustard</option>
+    <option value="Bacon">Bacon</option>
+    <option value="Mushroom">Mushroom</option>
+    <option value="Butter">Butter</option>
+    <option value="Seasoning">Seasoning</option>
+    <option value="Sausage">Sausage</option>
+    <option value="Fries">Fries</option>
+    <option value="Caramelized Onion">Caramelized Onion</option>
+    <option value="BBQ Sauce">BBQ Sauce</option>
+  </select>
+  <button class="btn btn-primary mt-3" onclick="filtrarProductos()">Apply Filter</button>
+</div>
+<div class="modal fade" id="modalAlergenos" tabindex="-1" aria-labelledby="modalAlergenosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalAlergenosLabel">Products Containing Allergenic Ingredients</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="listaAlergenos" class="row"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+ </div>
+    <div id="saludoUsuario" class="navbar-text ms-auto"></div>
+    <button class="position-relative ms-3" data-bs-toggle="modal" data-bs-target="#modalOrden">
+        🛍️
+        <span id="contadorOrden" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle  btn-excluir">0</span>
+    </button>
+</nav>
+
+  <div id="contenedor-productos" class="row"></div>
+
+<!-- Modal for Products with Allergens -->
+
+  <!-- Modal de Orden -->
+<!-- Order Modal -->
+<div class="modal fade" id="modalOrden" tabindex="-1" aria-labelledby="modalOrdenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalOrdenLabel">Your Order</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul id="detalleOrden" class="list-group mb-3"></ul>
+        <p id="mensajeVacio" class="text-center text-muted">There are no products in your order.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="btnEnviarMesero" type="button" class="btn btn-primary">Send to waiter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Modal de Edición -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body" id="modalEditarContenido">
+          <!-- Aquí se cargará el contenido dinámicamente desde editarProducto(index) -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS y Script principal -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/src/assets/js/script2.js"></script>
+
+  <!-- Script para alternar modo oscuro -->
+ <script>
+  // Guardar el estado del modo oscuro en el localStorage
+  function actualizarModoOscuro() {
+    const modoOscuroActivo = document.body.classList.contains('dark-mode');
+    localStorage.setItem('modoOscuro', modoOscuroActivo);
+  }
+
+  // Recuperar el estado del modo oscuro desde localStorage
+  function recuperarModoOscuro() {
+    const modoOscuroActivo = localStorage.getItem('modoOscuro') === 'true';
+    if (modoOscuroActivo) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+  // Al cargar la página, recupera el estado del modo oscuro
+  window.addEventListener('load', recuperarModoOscuro);
+
+  document.getElementById('btnDarkMode').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    actualizarModoOscuro();
+  });
+
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+    const btnDarkMode = document.getElementById("btnDarkMode");
+    const tooltip = bootstrap.Tooltip.getInstance(btnDarkMode);
+
+    // Estado inicial: claro
+    let modoOscuroActivo = false;
+
+    btnDarkMode.addEventListener("click", function () {
+      modoOscuroActivo = !modoOscuroActivo;
+
+      // Cambiar el texto del tooltip
+      const nuevoTitulo = modoOscuroActivo ? "Desactivar modo oscuro" : "Activar modo oscuro";
+      btnDarkMode.setAttribute("title", nuevoTitulo);
+
+      // Actualizar el tooltip manualmente
+      tooltip.setContent({ '.tooltip-inner': nuevoTitulo });
+      tooltip.hide(); // Ocultar para que se actualice correctamente
+    });
+  });
+</script>
+
+  <script>
+  //DISLEXIS
+  document.getElementById("btnDislexia").onclick = () => {
+    document.body.classList.toggle("fuente-dislexia");
+  };
+</script>
+<!-- CSS -->
+<style>
+   /*DISLEXIS*/
+@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic&display=swap');
+
+.fuente-dislexia {
+  font-family: 'OpenDyslexic', Arial, sans-serif;
+}
+</style>
+
+  <script>
+  //instrucciones por voz
+function leerTexto(texto) {
+  const speech = new SpeechSynthesisUtterance(texto);
+  speech.lang = "es-MX";
+  window.speechSynthesis.speak(speech);
+}
+  </script>
+    <script>
+    //CAmbiar tipo de letra
+let fontSize = 100;
+
+document.getElementById("btnAumentar").onclick = () => {
+  fontSize += 10;
+  document.body.style.fontSize = fontSize + "%";
+};
+
+document.getElementById("btnReducir").onclick = () => {
+  fontSize = Math.max(80, fontSize - 10); // Evita que baje de 80%
+  document.body.style.fontSize = fontSize + "%";
+};
+
+  </script>
+<script>
+  const btnIdioma = document.getElementById("btnIdioma");
+
+  // Función para cambiar el idioma
+  function cambiarIdioma() {
+    const idiomaActual = localStorage.getItem("idioma") || "es";
+    const nuevoIdioma = idiomaActual === "es" ? "en" : "es";
+    localStorage.setItem("idioma", nuevoIdioma);
+    // Aquí puedes agregar la lógica para traducir tu página
+    // Por ejemplo, recargar la página o cambiar el texto dinámicamente
+    location.reload();
+  }
+
+  // Establecer el idioma al cargar la página
+  window.addEventListener("load", () => {
+    const idioma = localStorage.getItem("idioma") || "es";
+    // Aquí puedes agregar la lógica para traducir tu página según el idioma
+    // Por ejemplo, cambiar el texto de los elementos
+  });
+
+  btnIdioma.addEventListener("click", cambiarIdioma);
+</script>
+
+
+
+
+</body>
+</html>

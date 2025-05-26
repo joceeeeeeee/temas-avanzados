@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Pedido</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="src/App.css" />
+</head>
+<body>
+<div class="menu-accesibilidad">
+  <button id="btnDislexia" class="btn btn-accesibilidad" title="Activar fuente legible para dislexia"> Fuente legible</button>
+  <button id="btnAumentar" class="btn btn-accesibilidad" title="Aumentar tamaño de letra">A+</button>
+  <button id="btnReducir" class="btn btn-accesibilidad" title="Reducir tamaño de letra">A-</button>
+  <button id="btnIdioma" class="boton-vintage" title="Cambiar a inglés">🇬🇧</button>
+</div>
+
+
+  <div class="d-flex align-items-center justify-content-center mb-4 titulo">
+    <img src="img/logo.png" alt="Logo" class="logo-soda" />
+    <h1 class="m-0">Burger Pos</h1>
+  </div>
+  <div class="card mx-auto" style="max-width: 400px;">
+    <div class="card-body">
+      <form id="registro-form" onsubmit="return validarFormulario()">
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Ingresa tu información           <button type="button"  class="btn-audio" onclick="leerTexto('Ingresa tu información, escribe tu nombre')" aria-label="Escuchar">🔈</button></label>
+          <input type="text" class="form-control" id="nombre" placeholder="Nombre" required>
+        </div>
+<div class="mb-3 position-relative" style="display: inline-block;">
+  <label for="mesa" class="form-label">Selecciona tu mesa   <button type="button"  class="btn-audio" onclick="leerTexto('Selecciona tu mesa de la lista')" aria-label="Escuchar">🔈</button>
+</label>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <select class="form-select" id="mesa" required>
+      <option selected disabled value="">Elige una mesa</option>
+      <option value="1">Mesa 1</option>
+      <option value="2">Mesa 2</option>
+      <option value="3">Mesa 3</option>
+      <option value="4">Mesa 4</option>
+    </select>
+    <span id="info-btn" class="info-icon" style="cursor: pointer; font-size: 1.2em;" aria-label="Información sobre mesas" title="Ayuda">
+      ❓
+    </span>
+  </div>
+
+  <!-- Cuadro de ayuda -->
+  <div id="info-box" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 8px; padding: 10px; background-color: #f8f9fa; border: 1px solid #ccc; border-radius: 6px; width: 300px; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <strong>Información</strong>
+      <button id="close-info" style="border: none; background: transparent; font-size: 1.2em; cursor: pointer;">&times;</button>
+    </div>
+    <p style="margin-top: 5px; font-size: 0.9em;">
+      El número de mesa se encuentra en el centro. En caso de no estar, acércate a caja para que te indiquen tu número de mesa.
+    </p>
+  </div>
+</div>
+<script>
+  //DISLEXIS
+  document.getElementById("btnDislexia").onclick = () => {
+    document.body.classList.toggle("fuente-dislexia");
+  };
+</script>
+<!-- CSS -->
+<style>
+   /*DISLEXIS*/
+@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic&display=swap');
+
+.fuente-dislexia {
+  font-family: 'OpenDyslexic', Arial, sans-serif;
+}
+</style>
+
+<script>
+  const infoBtn = document.getElementById('info-btn');
+  const infoBox = document.getElementById('info-box');
+  const closeInfo = document.getElementById('close-info');
+
+  infoBtn.addEventListener('click', () => {
+    infoBox.style.display = 'block';
+  });
+
+  closeInfo.addEventListener('click', () => {
+    infoBox.style.display = 'none';
+  });
+
+  // Opcional: cerrar al hacer clic fuera del cuadro
+  document.addEventListener('click', function (e) {
+    if (!infoBox.contains(e.target) && !infoBtn.contains(e.target)) {
+      infoBox.style.display = 'none';
+    }
+  });
+</script>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">ORDENAR</button>
+        </div>
+      </form>
+    </div>
+  </div>
+<!-- Botón para generar el PDF -->
+<!-- Botón para generar el PDF 
+<button id="generar-pdf" class="btn btn-primary mt-4">Generar PDF</button>-->
+
+  <script>
+    document.getElementById('registro-form').addEventListener('submit', async function (event) {
+      event.preventDefault(); // Evita que se recargue la página
+
+      const nombre = document.getElementById('nombre').value;
+      const mesa = document.getElementById('mesa').value;
+
+      try {
+        const respuesta = await fetch('http://localhost:3001/api/registro', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nombre, mesa })
+        });
+
+        const resultado = await respuesta.json();
+
+        if (respuesta.ok) {
+          console.log("Datos guardados correctamente. Redirigiendo...");
+          window.location.href = "menu.html"; // Redirigir a menu.html con ruta absoluta
+        } else {
+          console.log("Error al guardar los datos:", resultado.mensaje);
+        }
+      } catch (error) {
+        console.log('Error en la conexión con el servidor', error);
+      }
+    });
+
+    // Validación del formulario (si es necesario)
+    function validarFormulario() {
+      // Aquí puedes agregar lógica si necesitas validar algo antes de enviar el formulario
+      return true; // Si todo es correcto, retorna true para enviar el formulario
+    }
+ // Función para visualizar el PDF generado
+  function generarPDF() {
+    window.open('http://localhost:3001/pdfs/usuarios.pdf', '_blank');
+  }
+
+  // Asignar evento al botón
+  document.getElementById('generar-pdf').addEventListener('click', generarPDF);
+  </script>
+
+  <script>
+    //CAmbiar tipo de letra
+    let fontSize = 100;
+
+document.getElementById("btnAumentar").onclick = () => {
+  fontSize += 10;
+  document.body.style.fontSize = fontSize + "%";
+};
+
+document.getElementById("btnReducir").onclick = () => {
+  fontSize = Math.max(80, fontSize - 10); // Evita que baje de 80%
+  document.body.style.fontSize = fontSize + "%";
+};
+
+  </script>
+
+<script>
+  const btnIdioma = document.getElementById("btnIdioma");
+
+  // Función para cambiar el idioma
+  function cambiarIdioma() {
+    const idiomaActual = localStorage.getItem("idioma") || "es";
+    const nuevoIdioma = idiomaActual === "es" ? "en" : "es";
+    localStorage.setItem("idioma", nuevoIdioma);
+    
+    // Redirigir a index2.html después de cambiar el idioma
+    window.location.href = "index2.html";
+  }
+
+  // Establecer el idioma al cargar la página
+  window.addEventListener("load", () => {
+    const idioma = localStorage.getItem("idioma") || "es";
+    // Aquí puedes agregar la lógica para traducir tu página según el idioma
+    // Por ejemplo, cambiar el texto de los elementos
+  });
+
+  btnIdioma.addEventListener("click", cambiarIdioma);
+</script>
+
+
+
+<script>
+  //leer texti en voz alta
+  function leerTexto(texto) {
+    const voz = new SpeechSynthesisUtterance(texto);
+    speechSynthesis.speak(voz);
+  }
+</script>
+</body>
+</html>

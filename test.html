@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Menú</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="src/css/menu.css" />
+    <link rel="stylesheet" href="src/css/obscuro.css" />
+
+</head>
+<body class="container py-4">
+
+  <!-- Botón para activar modo oscuro -->
+<button id="btnDarkMode" class="btn btn-dark" data-bs-toggle="tooltip" title="Activar modo oscuro">🌙</button>
+
+
+
+
+<nav class="navbar bg-white mb-4 p-3 shadow-sm d-flex justify-content-between align-items-center">
+    <button class="btn btn-info" id="menuDesplegable" onclick="toggleMenu()">☰</button>
+
+<!-- Menú desplegable -->
+<div id="menuDesplegableContenido" class="menu-desplegable" style="display: none; background-color: #f8f9fa; padding: 10px; position: absolute; top: 50px; right: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+  
+  <!-- Botón para fuente legible -->
+  <button id="btnDislexia" class="boton-vintage">Fuente legible</button>
+
+  <!-- Botones para aumentar y reducir tamaño de texto -->
+  <button id="btnAumentar" class="boton-vintage" title="Aumentar tamaño de texto" onclick="incrementarTamanoTexto()">A+</button>
+  <button id="btnReducir" class="boton-vintage" title="Reducir tamaño de texto" onclick="reducirTamanoTexto()">A-</button>
+
+
+
+  <!-- Botón para incrementar el tamaño de los botones y checkboxes -->
+  <button class="btn btn-secondary" onclick="incrementarTamanoBotonesYCheckboxes()">Incrementar Tamaño</button>
+
+  <!-- Botón para restaurar la configuración inicial -->
+  <button class="btn btn-warning" onclick="restaurarConfiguracionInicial()">Restaurar Configuración Inicial</button>
+</div>
+ <h2 class="navbar-brand mb-0">Menú</h2>
+
+<div class="mb-3">
+  <label for="alergias" class="form-label" onclick="document.getElementById('alergias').focus()">Selecciona tus alergias:</label>
+  <select class="form-select" id="alergias" multiple size="6">
+    <option value="Lechuga">Lechuga</option>
+    <option value="Tomate">Tomate</option>
+    <option value="Queso">Queso</option>
+    <option value="Cebolla">Cebolla</option>
+    <option value="Carne">Carne</option>
+    <option value="Pollo">Pollo</option>
+    <option value="Pan">Pan</option>
+    <option value="Catsup">Catsup</option>
+    <option value="Mostaza">Mostaza</option>
+    <option value="Bacon">Bacon</option>
+    <option value="Hongo">Hongo</option>
+    <option value="Mantequilla">Mantequilla</option>
+    <option value="Sazonador">Sazonador</option>
+    <option value="Salchicha">Salchicha</option>
+    <option value="Papas">Papas</option>
+    <option value="Cebolla caramelizada">Cebolla caramelizada</option>
+    <option value="Salsa BBQ">Salsa BBQ</option>
+  </select>
+  <button class="btn btn-primary mt-3" onclick="filtrarProductos()">Aplicar Filtro</button>
+</div>
+<!-- Modal de Productos con Alérgenos -->
+<div class="modal fade" id="modalAlergenos" tabindex="-1" aria-labelledby="modalAlergenosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalAlergenosLabel">Productos con Ingredientes Alérgenos</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div id="listaAlergenos" class="row"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    </div>
+
+    <div id="saludoUsuario" class="navbar-text ms-auto"></div>
+    <button class="position-relative ms-3" data-bs-toggle="modal" data-bs-target="#modalOrden">
+        🛍️
+        <span id="contadorOrden" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle  btn-excluir">0</span>
+    </button>
+</nav>
+
+  <div id="contenedor-productos" class="row"></div>
+
+<style>
+
+
+/* Asegúrate de que el menú esté encima de otros elementos */
+#menuDesplegable {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+}
+
+/* Si no deseas que el contenido se desborde del modal */
+.modal-dialog {
+  max-width: 90%; /* Para reducir el tamaño en dispositivos pequeños */
+}
+
+.modal-content {
+  max-height: 80vh; /* Limitar la altura del modal */
+  overflow-y: auto; /* Hacer que aparezca la barra de desplazamiento si el contenido es largo */
+}
+
+
+
+
+ /* Asegura que el modal se ajuste dentro de la ventana */
+.modal-dialog {
+  max-width: 90%; /* El modal puede ocupar hasta el 90% del ancho */
+  max-height: 80vh; /* El modal puede ocupar hasta el 80% de la altura de la ventana */
+  overflow: hidden; /* Ocultar cualquier desbordamiento */
+  margin: 10px auto; /* Centrar el modal */
+}
+
+.modal-content {
+  overflow-y: auto; /* Permitir el desplazamiento vertical en el contenido */
+  padding: 20px;
+  box-sizing: border-box;
+  max-height: 100%; /* No sobrepasar el límite de la altura */
+}
+
+/* Ajustar el tamaño de los botones y checkboxes para que no se desborden */
+button, input[type="checkbox"] {
+  transition: all 0.3s ease;
+  box-sizing: border-box; /* Asegurar que el tamaño de los elementos se ajuste correctamente */
+}
+
+/* Ajustar el tamaño de los botones sin desbordar */
+button {
+  max-width: 100%; /* Evitar que los botones se desborden horizontalmente */
+  max-height: 50px; /* Limitar la altura de los botones */
+  min-width: 100px; /* Tamaño mínimo de los botones */
+}
+
+/* Ajustar el tamaño de los checkboxes */
+input[type="checkbox"] {
+  max-width: 30px; /* Limitar el tamaño máximo de los checkboxes */
+  max-height: 30px; /* Limitar el tamaño máximo de los checkboxes */
+  min-width: 20px; /* Tamaño mínimo de los checkboxes */
+  min-height: 20px; /* Tamaño mínimo de los checkboxes */
+}
+
+
+</style>
+<script>
+    // Función para alternar la visibilidad del menú desplegable
+// Función para alternar la visibilidad del menú
+function toggleMenu() {
+  const menu = document.getElementById('menuDesplegableContenido');
+  if (menu.style.display === "none" || menu.style.display === "") {
+    menu.style.display = "block"; // Mostrar el menú
+  } else {
+    menu.style.display = "none"; // Ocultar el menú
+  }
+}
+let incrementoCount = 0; // Contador de veces que se ha presionado el botón de incremento
+
+// Función para incrementar tamaño de botones y checkboxes
+function incrementarTamanoBotonesYCheckboxes() {
+  // Limitar el número de veces que se puede presionar el botón
+  if (incrementoCount >= 2) {
+    return; // Si ya se presionó 2 veces, no hacer nada
+  }
+
+  // Incrementar el contador
+  incrementoCount++;
+
+  // Aumentar el tamaño de los botones sin sobrepasar el modal
+  const botones = document.querySelectorAll('button');
+  botones.forEach(boton => {
+    const currentWidth = parseFloat(window.getComputedStyle(boton).width);
+    const currentHeight = parseFloat(window.getComputedStyle(boton).height);
+    
+    // Ajuste para que no se sobrepasen
+    const maxWidth = 300;  // Max width for buttons (adjust as needed)
+    const maxHeight = 50;  // Max height for buttons (adjust as needed)
+    
+    boton.style.width = Math.min(currentWidth * 1.2, maxWidth) + 'px';
+    boton.style.height = Math.min(currentHeight * 1.2, maxHeight) + 'px';
+  });
+
+  // Aumentar el tamaño de los checkboxes sin sobrepasar el modal
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    const currentSize = parseFloat(window.getComputedStyle(checkbox).width);
+
+    // Ajuste para que no se sobrepasen
+    const maxSize = 30;  // Max size for checkboxes (adjust as needed)
+    
+    checkbox.style.width = Math.min(currentSize * 1.2, maxSize) + 'px';
+    checkbox.style.height = Math.min(currentSize * 1.2, maxSize) + 'px';
+  });
+}
+
+// Función para restaurar la configuración inicial
+function restaurarConfiguracionInicial() {
+  // Restaurar el contador de incremento
+  incrementoCount = 0;
+
+  // Restaurar tamaño de botones a su valor inicial
+  const botones = document.querySelectorAll('button');
+  botones.forEach(boton => {
+    boton.style.width = '';  // Eliminar el estilo de tamaño personalizado
+    boton.style.height = '';
+  });
+
+  // Restaurar tamaño de los checkboxes a su valor inicial
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.style.width = '';  // Eliminar el estilo de tamaño personalizado
+    checkbox.style.height = '';
+  });
+}
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <!-- Modal de Orden -->
+  <div class="modal fade" id="modalOrden" tabindex="-1" aria-labelledby="modalOrdenLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalOrdenLabel">Tu Pedido</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <ul id="detalleOrden" class="list-group mb-3"></ul>
+          <p id="mensajeVacio" class="text-center text-muted">No hay productos en tu pedido.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button id="btnEnviarMesero" type="button" class="btn btn-primary">Enviar al mesero</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal de Edición -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body" id="modalEditarContenido">
+          <!-- Aquí se cargará el contenido dinámicamente desde editarProducto(index) -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS y Script principal -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/src/assets/js/script.js"></script>
+<div class="row" id="detalleOrden"></div>
+
+  <!-- Script para alternar modo oscuro -->
+ <script>
+  // Guardar el estado del modo oscuro en el localStorage
+  function actualizarModoOscuro() {
+    const modoOscuroActivo = document.body.classList.contains('dark-mode');
+    localStorage.setItem('modoOscuro', modoOscuroActivo);
+  }
+
+  // Recuperar el estado del modo oscuro desde localStorage
+  function recuperarModoOscuro() {
+    const modoOscuroActivo = localStorage.getItem('modoOscuro') === 'true';
+    if (modoOscuroActivo) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+  // Al cargar la página, recupera el estado del modo oscuro
+  window.addEventListener('load', recuperarModoOscuro);
+
+  document.getElementById('btnDarkMode').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    actualizarModoOscuro();
+  });
+
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+    const btnDarkMode = document.getElementById("btnDarkMode");
+    const tooltip = bootstrap.Tooltip.getInstance(btnDarkMode);
+
+    // Estado inicial: claro
+    let modoOscuroActivo = false;
+
+    btnDarkMode.addEventListener("click", function () {
+      modoOscuroActivo = !modoOscuroActivo;
+
+      // Cambiar el texto del tooltip
+      const nuevoTitulo = modoOscuroActivo ? "Desactivar modo oscuro" : "Activar modo oscuro";
+      btnDarkMode.setAttribute("title", nuevoTitulo);
+
+      // Actualizar el tooltip manualmente
+      tooltip.setContent({ '.tooltip-inner': nuevoTitulo });
+      tooltip.hide(); // Ocultar para que se actualice correctamente
+    });
+  });
+</script>
+
+  <script>
+  //DISLEXIS
+  document.getElementById("btnDislexia").onclick = () => {
+    document.body.classList.toggle("fuente-dislexia");
+  };
+</script>
+<!-- CSS -->
+<style>
+   /*DISLEXIS*/
+@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic&display=swap');
+
+.fuente-dislexia {
+  font-family: 'OpenDyslexic', Arial, sans-serif;
+}
+</style>
+
+  <script>
+  //instrucciones por voz
+function leerTexto(texto) {
+  const speech = new SpeechSynthesisUtterance(texto);
+  speech.lang = "es-MX";
+  window.speechSynthesis.speak(speech);
+}
+  </script>
+    <script>
+    //CAmbiar tipo de letra
+let fontSize = 100;
+
+document.getElementById("btnAumentar").onclick = () => {
+  fontSize += 10;
+  document.body.style.fontSize = fontSize + "%";
+};
+
+document.getElementById("btnReducir").onclick = () => {
+  fontSize = Math.max(80, fontSize - 10); // Evita que baje de 80%
+  document.body.style.fontSize = fontSize + "%";
+};
+
+  </script>
+
+
+</body>
+</html>
