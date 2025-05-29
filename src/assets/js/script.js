@@ -387,3 +387,94 @@ function toggleMenu() {
     menu.style.display = "none"; // Ocultar el menú
   }
 }
+
+
+
+  // Guardar el estado del modo oscuro en el localStorage
+  function actualizarModoOscuro() {
+    const modoOscuroActivo = document.body.classList.contains('dark-mode');
+    localStorage.setItem('modoOscuro', modoOscuroActivo);
+  }
+
+  // Recuperar el estado del modo oscuro desde localStorage
+  function recuperarModoOscuro() {
+    const modoOscuroActivo = localStorage.getItem('modoOscuro') === 'true';
+    if (modoOscuroActivo) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+  // Al cargar la página, recupera el estado del modo oscuro
+  window.addEventListener('load', recuperarModoOscuro);
+
+  document.getElementById('btnDarkMode').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    actualizarModoOscuro();
+  });
+
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+    const btnDarkMode = document.getElementById("btnDarkMode");
+    const tooltip = bootstrap.Tooltip.getInstance(btnDarkMode);
+
+    // Estado inicial: claro
+    let modoOscuroActivo = false;
+
+    btnDarkMode.addEventListener("click", function () {
+      modoOscuroActivo = !modoOscuroActivo;
+
+      // Cambiar el texto del tooltip
+      const nuevoTitulo = modoOscuroActivo ? "Desactivar modo oscuro" : "Activar modo oscuro";
+      btnDarkMode.setAttribute("title", nuevoTitulo);
+
+      // Actualizar el tooltip manualmente
+      tooltip.setContent({ '.tooltip-inner': nuevoTitulo });
+      tooltip.hide(); // Ocultar para que se actualice correctamente
+    });
+  });
+
+
+
+  //instrucciones por voz
+function leerTexto(texto) {
+  const speech = new SpeechSynthesisUtterance(texto);
+  speech.lang = "es-MX";
+  window.speechSynthesis.speak(speech);
+}
+
+    //CAmbiar tipo de letra
+let fontSize = 100;
+
+document.getElementById("btnAumentar").onclick = () => {
+  fontSize += 10;
+  document.body.style.fontSize = fontSize + "%";
+};
+
+document.getElementById("btnReducir").onclick = () => {
+  fontSize = Math.max(80, fontSize - 10); // Evita que baje de 80%
+  document.body.style.fontSize = fontSize + "%";
+};
+
+  
+
+  // Verificar si el modo dislexia está activado al cargar la página
+  if (localStorage.getItem('modoDislexia') === 'activado') {
+    document.body.classList.add("fuente-dislexia");
+  }
+
+  // Al hacer clic en el botón para activar/desactivar dislexia
+  document.getElementById("btnDislexia").onclick = () => {
+    // Alternar la clase de dislexia
+    document.body.classList.toggle("fuente-dislexia");
+
+    // Guardar el estado actual del modo dislexia en el almacenamiento local
+    if (document.body.classList.contains("fuente-dislexia")) {
+      localStorage.setItem('modoDislexia', 'activado');
+    } else {
+      localStorage.setItem('modoDislexia', 'desactivado');
+    }
+  };
+
