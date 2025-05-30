@@ -478,3 +478,4 @@ document.getElementById("btnReducir").onclick = () => {
     }
   };
 
+//m
